@@ -16,6 +16,8 @@ use App\Http\Controllers\UserController;
 |
 */
 
+// Show all Pets -- Visible for all users including not registered
+Route::get('pets', [PetsController::class, 'show']);
 
 //Protected Routes
 Route::group(['middleware' => ['auth:sanctum']], function () {
@@ -36,8 +38,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 
     // ------- Pets API
-    // Show all Pets
-    Route::get('pets', [PetsController::class, 'show']);
 
     // Create Pet
     Route::post('pets', [PetsController::class, 'store']);
