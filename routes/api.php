@@ -1,8 +1,9 @@
 <?php
 
-use App\Models\User;
+use App\Http\Controllers\PetsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,14 +16,35 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-    return $request->user();
-});
 
-Route::middleware(['auth:sanctum'])->delete('/user/{id}', function (Request $request, $id) {
-    $user = User::find($id);
+//Protected Routes
+Route::group(['middleware' => ['auth:sanctum']], function () {
 
-    $user->delete();
-    
-    return response()->json(["success" => "User ID: {$id} has been deleted"]);
+    // Show current User
+    Route::get('user', function (Request $request) {
+        return $request->user();
+    });
+
+    // Show all users
+    Route::get('users/{id?}', [UserController::class, 'index']);
+
+    // Update user by ID
+    Route::put('user/{id}', [UserController::class, 'update']);
+
+    // Soft Delete users
+    Route::delete('user/{id}', [UserController::class, 'destroy']);
+
+
+    // ------- Pets API
+    // Show all Pets
+    Route::get('pets', [PetsController::class, 'show']);
+
+    // Create Pet
+    Route::post('pets', [PetsController::class, 'store']);
+
+    // Update pet by ID
+    Route::put('pets/{id}', [PetsController::class, 'update']);
+
+    // Soft Delete pets
+    Route::delete('pets/{id}', [PetsController::class, 'destroy']);
 });

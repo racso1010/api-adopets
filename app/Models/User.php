@@ -48,8 +48,36 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    
-    public function pets(){
+
+    public function pets()
+    {
         return $this->hasMany(Pets::class);
+    }
+
+    // Check if user is admin
+    public static function isAdmin(int $userId)
+    {
+        return  self::where([
+            ['id', $userId],
+            ['role', 'admin']
+        ])->withTrashed()->exists();
+    }
+
+    // Check if user is staff
+    public static function isStaff(int $userId)
+    {
+        return  self::where([
+            ['id', $userId],
+            ['role', 'staff']
+        ])->withTrashed()->exists();
+    }
+
+    // Check if user is member
+    public static function isMember(int $userId)
+    {
+        return  self::where([
+            ['id', $userId],
+            ['role', 'member']
+        ])->withTrashed()->exists();
     }
 }

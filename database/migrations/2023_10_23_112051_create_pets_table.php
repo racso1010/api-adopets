@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('pets', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained(table: 'users', indexName: 'pets_user_id')->onDelete('cascade');
             $table->string('name');
             $table->string('age');
             $table->string('race');
@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('gender');
             $table->boolean('sterilized');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
