@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Requests\UpdatePetsRequest;
 use App\Http\Resources\PetsResources;
 use App\Models\Pets;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PetsController extends Controller
 {
@@ -26,6 +26,12 @@ class PetsController extends Controller
         $data = $request->all();
         $data['user_id'] = Auth::user()->id;
 
+
+        if (isset($data['image'])) {
+            $image_path = $request->file('image')->store('pets', 'public');
+            $data['image'] = $image_path;
+        }
+
         Pets::create($data);
 
         return new PetsResources($data);
@@ -36,12 +42,24 @@ class PetsController extends Controller
      */
     public function show(Request $request)
     {
+        // Get only one pet
+        if (isset($request->id)) {
+            $pet =  Pets::find($request->id);
+            $pet->image = Storage::url($pet->image);
+            return $pet;
+        }
         // Get all pets
         if ($request->all == true) {
-            return Pets::withTrashed()->get();
+            $pets = Pets::withTrashed()->get();
+        } else {
+            $pets = Pets::all();
         }
 
-        return Pets::all();
+        foreach ($pets as $key => &$pet) {
+            $pet->image = Storage::url($pet->image);
+        }
+
+        return $pets;
     }
 
     /**
@@ -51,6 +69,11 @@ class PetsController extends Controller
     {
         $data = $request->all();
         $updatePet = Pets::find($pets);
+
+        if (isset($data['image'])) {
+            $image_path = $request->file('image')->store('pets', 'public');
+            $data['image'] = $image_path;
+        }
 
         $updatePet->update($data);
 

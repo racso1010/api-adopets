@@ -24,7 +24,8 @@ class Pets extends Model
         'overview',
         'gender',
         'sterilized',
-        'user_id'
+        'user_id',
+        'image'
     ];
 
 

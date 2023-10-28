@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules;
 
 class UserController extends Controller
@@ -19,11 +20,19 @@ class UserController extends Controller
         if (User::isAdmin($id)) {
 
             // Get single user
-            if (isset($user_id))
-                return User::find($user_id);
+            if (isset($user_id)) {
+                $user = User::find($user_id);
+                $user->profile_photo = Storage::url($user->profile_photo);
+                return $user;
+            }
 
             // Get all users
-            return User::all();
+            $users = User::all();
+
+            foreach ($users as $key => &$user) {
+                $user->profile_photo = Storage::url($user->profile_photo);
+            }
+            return $users;
         }
 
         return response()->json(['error' => 'Unauthorized'], 401);
@@ -40,11 +49,16 @@ class UserController extends Controller
             'first_name' => ['string'],
             'last_name' => ['string'],
             'phone_number' => ['string'],
+            'profile_photo' => ['image', 'mimes:jpg,png,jpeg,gif,svg', 'max:2048'],
             'role' => ['string'],
             'email' => ['string', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['confirmed', Rules\Password::defaults()],
         ];
 
+        if (isset($data['profile_photo'])) {
+            $image_path = $request->file('profile_photo')->store('image', 'public');
+            $data['profile_photo'] = $image_path;
+        }
 
         // If user wants to reset password
         if (isset($data['password'])) {

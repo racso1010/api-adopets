@@ -4,6 +4,7 @@ use App\Http\Controllers\PetsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,7 +25,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     // Show current User
     Route::get('user', function (Request $request) {
-        return $request->user();
+        $user = $request->user();
+        $user->profile_photo = Storage::url($user->profile_photo);
+        return $user;
     });
 
     // Show all users

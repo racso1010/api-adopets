@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('overview');
             $table->string('gender');
             $table->boolean('sterilized');
+            $table->string('image')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
