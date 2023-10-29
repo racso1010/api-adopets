@@ -40,23 +40,24 @@ class PetsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request)
+    public function show(Request $request, $id = null)
     {
-        // Get only one pet
-        if (isset($request->id)) {
-            $pet =  Pets::find($request->id);
-            $pet->image = Storage::url($pet->image);
-            return $pet;
-        }
         // Get all pets
         if ($request->all == true) {
             $pets = Pets::withTrashed()->get();
         } else {
+            // Get only one pet
+            if (isset($id) && !empty($id)) {
+                $pet =  Pets::find($id);
+                $pet->image = env('APP_URL') . Storage::url($pet->image);
+                return $pet;
+            }
+
             $pets = Pets::all();
         }
 
         foreach ($pets as $key => &$pet) {
-            $pet->image = Storage::url($pet->image);
+            $pet->image = env('APP_URL') . Storage::url($pet->image);
         }
 
         return $pets;
