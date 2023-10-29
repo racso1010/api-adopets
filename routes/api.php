@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\PetsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -18,13 +19,13 @@ use Illuminate\Support\Facades\Storage;
 */
 
 // Show all Pets -- Visible for all users including not registered
-Route::get('pets', [PetsController::class, 'show']);
+Route::get('pets/{id?}', [PetsController::class, 'show']);
 
 //Protected Routes
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
     // Show current User
-    Route::get('user', function (Request $request) {
+    Route::get('/user', function (Request $request) {
         $user = $request->user();
         $user->profile_photo = Storage::url($user->profile_photo);
         return $user;
