@@ -26,10 +26,15 @@ class PetsController extends Controller
         $data = $request->all();
         $data['user_id'] = Auth::user()->id;
 
-
         if (isset($data['image'])) {
             $image_path = $request->file('image')->store('pets', 'public');
             $data['image'] = $image_path;
+        }
+
+        if (isset($data['sterilized']) && $data['sterilized'] === true) {
+            $data['sterilized'] = 1;
+        } else {
+            $data['sterilized'] = 0;
         }
 
         Pets::create($data);
